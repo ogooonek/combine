@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Blog</h1>
+        
+        <h2>Add post</h2>
+        <input type="text" id="title" placeholder="Title">
+        <textarea id="body" placeholder="Text"></textarea>
+        <input type="text" id="author" placeholder="Author">
+        <button onclick="addPost()">Add</button>
+        
+        <h2>List of posts</h2>
+        <div id="posts"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api/blogs';
+        
+        async function fetchPosts() {
+            const response = await fetch(API_URL);
+            const posts = await response.json();
+            
+            document.getElementById('posts').innerHTML = '';
+            posts.forEach(post => {
+                document.getElementById('posts').innerHTML += `
+                    <div class="post" id="post-${post._id}">
+                        <h3>${post.title}</h3>
+                        <p>${post.body}</p>
+                        <small>Автор: ${post.author}</small>
+                        <div class="btn-group">
+                            <button onclick="deletePost('${post._id}')">Удалить</button>
+                            <button onclick="editPost('${post._id}', '${post.title}', '${post.body}')">Редактировать</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        async function addPost() {
+            const title = document.getElementById('title').value;
+            const body = document.getElementById('body').value;
+            const author = document.getElementById('author').value;
+            
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body, author })
+            });
+            
+            fetchPosts();
+        }
+        
+        async function deletePost(id) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchPosts();
+        }
+        
+        function editPost(id, title, body, author) {
+    const newTitle = prompt('New title:', title);
+    const newBody = prompt('New text:', body);
+    const newAuthor = prompt('New author:', author);
+
+    if (newTitle && newBody && newAuthor) {
+        fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: newTitle, body: newBody, author: newAuthor })
+        }).then(() => fetchPosts());
+    }
+}
+
+        fetchPosts();
+    </script>
+</body>
+</html>

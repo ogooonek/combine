@@ -1,0 +1,319 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .weather-container, .news-container, .time-container, .map-container {
+            margin-top: 20px;
+            display: none; 
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <input type="text" id="city" placeholder="Enter city" />
+    <button onclick="getWeatherData()">Get</button>
+
+    <div class="weather-container" id="weather-container">
+        <h2>Weather</h2>
+        <p id="weather-data"></p>
+    </div>
+
+    <div class="time-container" id="time-container">
+        <h2>Time</h2>
+        <p id="time"></p>
+    </div>
+
+    <div class="news-container" id="news-container">
+        <h2>News</h2>
+        <div id="news"></div>
+    </div>
+
+  
+    <div class="map-container" id="map-container">
+        <h2>Map</h2>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        const getWeatherData = async () => {
+            const city = document.getElementById('city').value || 'Astana'; 
+            const weatherResponse = await fetch(`/weather?city=${city}`);
+            const weatherData = await weatherResponse.json();
+            const newsResponse = await fetch(`/news?city=${city}`);
+            const newsData = await newsResponse.json();
+            const timeResponse = await fetch(`/timezone?lat=${weatherData.coordinates.lat}&lon=${weatherData.coordinates.lon}`);
+            const timeData = await timeResponse.json();
+
+            document.getElementById('weather-container').style.display = 'block';
+            document.getElementById('weather-data').innerHTML = `
+                Temperature: ${weatherData.temperature}°C<br>
+                Feels like: ${weatherData.feels_like}°C<br>
+                Description: ${weatherData.description}<br>
+                Humidity: ${weatherData.humidity}%<br>
+                Pressure: ${weatherData.pressure} hPa<br>
+                Wind Speed: ${weatherData.wind_speed} m/s<br>
+                Country: ${weatherData.country}<br>
+                Rain: ${weatherData.rain}
+            `;
+
+            // Показать карту
+            document.getElementById('map-container').style.display = 'block';
+            const map = L.map('map').setView([weatherData.coordinates.lat, weatherData.coordinates.lon], 10); // Устанавливаем координаты города
+
+            // Добавляем слой карты (поставляем OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Добавляем маркер для города
+            L.marker([weatherData.coordinates.lat, weatherData.coordinates.lon])
+                .addTo(map)
+                .bindPopup(`<b>${city}</b>`)
+                .openPopup();
+
+            document.getElementById('time-container').style.display = 'block';
+            const time = new Date(timeData.formatted);
+            document.getElementById('time').innerHTML = `Current time: ${time.toLocaleTimeString()}`;
+            
+            document.getElementById('news-container').style.display = 'block';
+            document.getElementById('news').innerHTML = newsData.map(article => `
+                <div>
+                    <h5><a href="${article.url}" target="_blank">${article.title}</a></h5>
+                    <p>${article.description}</p>
+                </div>
+            `).join('');
+        }
+    </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .weather-container, .news-container, .time-container, .map-container {
+            margin-top: 20px;
+            display: none; 
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <input type="text" id="city" placeholder="Enter city" />
+    <button onclick="getWeatherData()">Get</button>
+
+    <div class="weather-container" id="weather-container">
+        <h2>Weather</h2>
+        <p id="weather-data"></p>
+    </div>
+
+    <div class="time-container" id="time-container">
+        <h2>Time</h2>
+        <p id="time"></p>
+    </div>
+
+    <div class="news-container" id="news-container">
+        <h2>News</h2>
+        <div id="news"></div>
+    </div>
+
+  
+
+    <script>
+        const getWeatherData = async () => {
+            const city = document.getElementById('city').value || 'Astana'; 
+            
+            try {
+                const weatherResponse = await fetch(`/weather?city=${city}`);
+                if (!weatherResponse.ok) throw new Error('Weather data not found');
+                const weatherData = await weatherResponse.json();
+
+                const newsResponse = await fetch(`/news?city=${city}`);
+                if (!newsResponse.ok) throw new Error('News data not found');
+                const newsData = await newsResponse.json();
+
+                const timeResponse = await fetch(`/timezone?lat=${weatherData.coordinates.lat}&lon=${weatherData.coordinates.lon}`);
+                if (!timeResponse.ok) throw new Error('Time data not found');
+                const timeData = await timeResponse.json();
+
+                document.getElementById('weather-container').style.display = 'block';
+                document.getElementById('weather-data').innerHTML = `
+                    Temperature: ${weatherData.temperature}°C<br>
+                    Feels like: ${weatherData.feels_like}°C<br>
+                    Description: ${weatherData.description}<br>
+                    Humidity: ${weatherData.humidity}%<br>
+                    Pressure: ${weatherData.pressure} hPa<br>
+                    Wind Speed: ${weatherData.wind_speed} m/s<br>
+                    Country: ${weatherData.country}<br>
+                    Rain: ${weatherData.rain}
+                `;
+
+               
+
+                document.getElementById('time-container').style.display = 'block';
+                const time = new Date(timeData.formatted);
+                document.getElementById('time').innerHTML = `Current time: ${time.toLocaleTimeString()}`;
+                
+                document.getElementById('news-container').style.display = 'block';
+                document.getElementById('news').innerHTML = newsData.map(article => `
+                    <div>
+                        <h5><a href="${article.url}" target="_blank">${article.title}</a></h5>
+                        <p>${article.description}</p>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Error fetching data. Please try again.');
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   
+    <header>
+        <img src="/images/icons8-погода-48.png" alt="Icon" class="app-icon">
+        <h1>Weather App</h1>
+    </header>
+    
+
+    <input type="text" id="city" placeholder="Enter city" />
+    <button onclick="getWeatherData()">Get</button>
+
+    <div class="weather-container" id="weather-container">
+        <h2>Weather</h2>
+        <p id="weather-data"></p>
+    </div>
+
+    <div class="map-container" id="map-container">
+        <h2>Map</h2>
+        <div id="map"></div>
+    </div>
+
+    <div class="time-container" id="time-container">
+        <h2>Time</h2>
+        <p id="time"></p>
+    </div>
+
+    <div class="news-container" id="news-container">
+        <h2>News</h2>
+        <div id="news"></div>
+    </div>
+
+    <div class="map-container" id="map-container">
+        <h2>Map</h2>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        let map;
+
+        const initMap = (lat, lon) => {
+            if (!map) {
+                map = L.map('map').setView([lat, lon], 10);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(map);
+            } else {
+                map.setView([lat, lon], 10);
+            }
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup("City Location")
+                .openPopup();
+        };
+
+        const getWeatherData = async () => {
+            const city = document.getElementById('city').value || 'Astana'; 
+            
+            try {
+                const weatherResponse = await fetch(`/weather?city=${city}`);
+                if (!weatherResponse.ok) throw new Error('Weather data not found');
+                const weatherData = await weatherResponse.json();
+
+                const newsResponse = await fetch(`/news?city=${city}`);
+                if (!newsResponse.ok) throw new Error('News data not found');
+                const newsData = await newsResponse.json();
+
+                const timeResponse = await fetch(`/timezone?lat=${weatherData.coordinates.lat}&lon=${weatherData.coordinates.lon}`);
+                if (!timeResponse.ok) throw new Error('Time data not found');
+                const timeData = await timeResponse.json();
+
+                // Weather
+                document.getElementById('weather-container').style.display = 'block';
+                document.getElementById('weather-data').innerHTML = `
+                    Temperature: ${weatherData.temperature}°C<br>
+                    Feels like: ${weatherData.feels_like}°C<br>
+                    Description: ${weatherData.description}<br>
+                    Humidity: ${weatherData.humidity}%<br>
+                    Pressure: ${weatherData.pressure} hPa<br>
+                    Wind Speed: ${weatherData.wind_speed} m/s<br>
+                    Country: ${weatherData.country}<br>
+                    Rain: ${weatherData.rain}
+                `;
+
+                // Time 
+                document.getElementById('time-container').style.display = 'block';
+                const time = new Date(timeData.formatted);
+                document.getElementById('time').innerHTML = `Current time: ${time.toLocaleTimeString()}`;
+
+                // News 
+                document.getElementById('news-container').style.display = 'block';
+                document.getElementById('news').innerHTML = newsData.map(article => `
+                    <div>
+                        <h5><a href="${article.url}" target="_blank">${article.title}</a></h5>
+                        <p>${article.description}</p>
+                    </div>
+                `).join('');
+
+                // Map
+                document.getElementById('map-container').style.display = 'block';
+                initMap(weatherData.coordinates.lat, weatherData.coordinates.lon);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Error fetching data. Please try again.');
+            }
+        };
+    </script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html>

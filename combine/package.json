@@ -1,0 +1,40 @@
+{
+  "name": "combine",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:blog-api": "cd blog-api && npm start",
+    "start:bmi": "cd bmi && npm start",
+    "start:email": "cd email && npm start",
+    "start:log": "cd log && node src/index.js",
+    "start:newqr": "cd newqr && npm start",
+    "start:weather-api-app": "cd weather-api-app && npm start",
+    "start:app": "node app.js",
+    "start": "concurrently \"npm run start:blog-api\" \"npm run start:bmi\" \"npm run start:email\" \"npm run start:log\" \"npm run start:newqr\" \"npm run start:weather-api-app\" \"npm run start:app\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "hbs": "^4.2.0",
+    "inquirer": "^12.4.2",
+    "leaflet": "^1.9.4",
+    "mongoose": "^8.10.1",
+    "nodemailer": "^6.10.0",
+    "qr-image": "^3.2.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9"
+  }
+}
